@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "generated_at": "2025-12-28T02:41:28.307962",
+    "node_count": 5,
+    "edge_count": 0
+  },
+  "nodes": [
+    {
+      "id": "archives",
+      "type": "collection",
+      "properties": {
+        "name": "File Archives",
+        "total_files": 0
+      }
+    },
+    {
+      "id": "ai_conversations",
+      "type": "collection",
+      "properties": {
+        "name": "AI Conversations",
+        "total": 0
+      }
+    },
+    {
+      "id": "personal_repos",
+      "type": "collection",
+      "properties": {
+        "name": "Personal Repositories",
+        "total": 0
+      }
+    },
+    {
+      "id": "org_repos",
+      "type": "collection",
+      "properties": {
+        "name": "Organization Repositories",
+        "total": 0
+      }
+    },
+    {
+      "id": "web_bookmarks",
+      "type": "collection",
+      "properties": {
+        "name": "Web Bookmarks",
+        "total": 0
+      }
+    }
+  ],
+  "edges": [],
+  "statistics": {
+    "node_types": {
+      "collection": 5
+    },
+    "relationship_types": {}
+  }
+}

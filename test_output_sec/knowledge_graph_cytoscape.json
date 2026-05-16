@@ -1,0 +1,47 @@
+{
+  "elements": {
+    "nodes": [
+      {
+        "data": {
+          "id": "archives",
+          "type": "collection",
+          "name": "File Archives",
+          "total_files": 0
+        }
+      },
+      {
+        "data": {
+          "id": "ai_conversations",
+          "type": "collection",
+          "name": "AI Conversations",
+          "total": 0
+        }
+      },
+      {
+        "data": {
+          "id": "personal_repos",
+          "type": "collection",
+          "name": "Personal Repositories",
+          "total": 0
+        }
+      },
+      {
+        "data": {
+          "id": "org_repos",
+          "type": "collection",
+          "name": "Organization Repositories",
+          "total": 0
+        }
+      },
+      {
+        "data": {
+          "id": "web_bookmarks",
+          "type": "collection",
+          "name": "Web Bookmarks",
+          "total": 0
+        }
+      }
+    ],
+    "edges": []
+  }
+}
