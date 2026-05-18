@@ -13,6 +13,17 @@ from typing import Optional
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.markdown import Markdown
+    from rich.box import ROUNDED
+    RICH_AVAILABLE = True
+    console = Console()
+except ImportError:
+    RICH_AVAILABLE = False
+    console = None
+
 from cognitive_tribunal.modules.archive_scanner import ArchiveScanner
 from cognitive_tribunal.modules.ai_context_aggregator import AIContextAggregator
 from cognitive_tribunal.modules.personal_repo_analyzer import PersonalRepoAnalyzer
@@ -23,8 +34,57 @@ from cognitive_tribunal.outputs.knowledge_graph import KnowledgeGraphGenerator
 from cognitive_tribunal.outputs.triage_report import TriageReportGenerator
 
 
+def display_welcome():
+    """Displays the welcome message (Empty State)."""
+    if RICH_AVAILABLE:
+        welcome_md = """
+# Welcome to Cognitive Archaeology Tribunal
+
+A comprehensive tool for auditing your digital ecosystem.
+
+## Available Modules
+
+* **Archive Scanner**: Audit files, find duplicates, analyze usage
+* **AI Context**: Analyze ChatGPT conversations
+* **GitHub Audit**: Analyze personal and organization repositories
+* **Web Bookmarks**: Analyze bookmark exports
+
+## Quick Start Examples
+
+* **Scan Archives**: `python main.py --scan-archives /path/to/docs`
+* **Analyze GitHub**: `python main.py --personal-repos your-username`
+* **Full Audit**: `python main.py --all --output-dir ./audit-results`
+
+*Run `python main.py --help` for full documentation.*
+"""
+        console.print(Panel(
+            Markdown(welcome_md),
+            title="[bold blue]Cognitive Archaeology Tribunal[/bold blue]",
+            subtitle="[italic]Digital Ecosystem Auditor[/italic]",
+            border_style="blue",
+            box=ROUNDED,
+            padding=(1, 2)
+        ))
+    else:
+        print("=" * 70)
+        print("COGNITIVE ARCHAEOLOGY TRIBUNAL")
+        print("Comprehensive Archaeological Dig Tool")
+        print("=" * 70)
+        print("\nNo arguments provided. Here are some examples to get started:\n")
+        print("  python main.py --scan-archives /path/to/archives")
+        print("  python main.py --personal-repos username")
+        print("  python main.py --all\n")
+        print("Run 'python main.py --help' for more information.")
+
+
 def main():
     """Main entry point for the CLI."""
+
+    # Empty State Check
+    if len(sys.argv) == 1:
+        display_welcome()
+        sys.exit(0)
+
     parser = argparse.ArgumentParser(
         description='Cognitive Archaeology Tribunal - Comprehensive digital archaeology tool',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -83,7 +143,7 @@ Examples:
     
     # Module 1: Archive Scanner
     if args.scan_archives:
-        print("\n[1/4] Running Archive Scanner...")
+        print("\n[1/5] Running Archive Scanner...")
         print("-" * 70)
         
         scanner = ArchiveScanner()
@@ -105,7 +165,7 @@ Examples:
     
     # Module 2: AI Context Aggregator
     if args.ai_conversations:
-        print("\n[2/4] Running AI Context Aggregator...")
+        print("\n[2/5] Running AI Context Aggregator...")
         print("-" * 70)
         
         aggregator = AIContextAggregator()
@@ -121,7 +181,7 @@ Examples:
     
     # Module 3: Personal Repo Analyzer
     if args.personal_repos:
-        print("\n[3/4] Running Personal Repo Analyzer...")
+        print("\n[3/5] Running Personal Repo Analyzer...")
         print("-" * 70)
         
         try:
@@ -140,7 +200,7 @@ Examples:
     
     # Module 4: Org Repo Analyzer
     if args.org_repos:
-        print("\n[4/4] Running Org Repo Analyzer...")
+        print("\n[4/5] Running Org Repo Analyzer...")
         print("-" * 70)
         
         try:
@@ -156,7 +216,7 @@ Examples:
             print(f"✓ Org repo analysis complete. Analyzed {org_results.get('stats', {}).get('total_repos', 0)} repositories")
         except Exception as e:
             print(f"✗ Error analyzing org repos: {e}")
-    
+
     # Module 5: Web Bookmark Analyzer
     if args.web_bookmarks:
         print("\n[5/5] Running Web Bookmark Analyzer...")

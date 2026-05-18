@@ -1,0 +1,3 @@
+## 2024-05-22 - [Implementing Rich Empty State]
+**Learning:** CLI tools often present a harsh error message when no arguments are provided. By intercepting the "no arguments" state and presenting a styled "Welcome Panel" (via the `rich` library), we transform a user error into a helpful onboarding moment. This pattern ("Empty State as Welcome Mat") is particularly effective for complex CLIs with many sub-commands.
+**Action:** Always check `sys.argv` length before argument parsing in CLIs to provide a soft landing for new users. Use conditional imports for UI libraries to ensure the tool remains functional in minimal environments.
