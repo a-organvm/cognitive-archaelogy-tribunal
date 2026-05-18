@@ -59,6 +59,42 @@ class ArchiveScanner:
         
         return False
     
+    # Define unsafe paths as class constants
+    # We block only critical system directories to avoid preventing
+    # scanning of valid application data in /var or /opt
+    UNSAFE_PATHS_POSIX = [
+        '/etc', '/sys', '/proc', '/dev',
+        '/bin', '/sbin', '/boot', '/lib', '/lib64',
+        '/root', '/run'
+    ]
+    UNSAFE_PATHS_NT = [
+        'C:\\Windows'
+    ]
+
+    def is_unsafe_path(self, path: Path) -> bool:
+        """
+        Check if path is unsafe to scan (e.g., system directories).
+        Prevents path traversal and scanning of sensitive system areas.
+        """
+        resolved_path = path.resolve()
+
+        # Block scanning the filesystem root directly
+        if str(resolved_path) == resolved_path.anchor:
+            return True
+
+        # Select appropriate unsafe list
+        unsafe_paths = self.UNSAFE_PATHS_POSIX if os.name == 'posix' else []
+        if os.name == 'nt':
+            unsafe_paths = self.UNSAFE_PATHS_NT
+
+        for unsafe in unsafe_paths:
+            u_path = Path(unsafe)
+            # Check if strictly equal or if inside the unsafe directory
+            if resolved_path == u_path or u_path in resolved_path.parents:
+                return True
+
+        return False
+
     def scan_directory(self, root_path: str, recursive: bool = True, max_depth: Optional[int] = None) -> Dict:
         """
         Scan a directory and classify all files.
@@ -73,6 +109,9 @@ class ArchiveScanner:
         """
         root = Path(root_path).resolve()
         
+        if self.is_unsafe_path(root):
+            return {'error': f"Unsafe path detected: {root_path}. Scanning system directories is not allowed."}
+
         if not root.exists():
             return {'error': f"Path does not exist: {root_path}"}
         
