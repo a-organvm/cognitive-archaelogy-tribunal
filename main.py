@@ -66,6 +66,56 @@ Examples:
     
     # Validate arguments
     if not (args.all or args.scan_archives or args.ai_conversations or args.personal_repos or args.org_repos or args.web_bookmarks):
+        # UX: If no arguments provided, show a friendly welcome screen instead of an error
+        if len(sys.argv) == 1:
+            try:
+                from rich.console import Console
+                from rich.panel import Panel
+                from rich.markdown import Markdown
+                from rich.theme import Theme
+
+                custom_theme = Theme({
+                    "success": "green",
+                    "danger": "bold red"
+                })
+                console = Console(theme=custom_theme)
+
+                welcome_text = """
+# Cognitive Archaeology Tribunal
+
+Welcome to the digital excavation tool. This tool helps you audit, archive, and analyze your digital footprint.
+
+## Available Modules
+
+* **Archive Scanner**: Audit local file repositories
+* **AI Context**: Analyze ChatGPT conversations
+* **Repo Analyzer**: Audit GitHub repositories (Personal & Org)
+* **Web Bookmarks**: Analyze browser bookmarks
+
+## Quick Start
+
+Run with specific modules:
+```bash
+python main.py --scan-archives ./my-files --output-dir ./audit
+```
+
+For full help:
+```bash
+python main.py --help
+```
+"""
+                console.print(Panel(
+                    Markdown(welcome_text),
+                    title="Dig Site Initialized",
+                    subtitle="Ready for Analysis",
+                    border_style="green",
+                    padding=(1, 2)
+                ))
+                sys.exit(0)
+            except ImportError:
+                # Fallback if rich is not available
+                pass
+
         parser.error('At least one module must be specified')
     
     print("=" * 70)
