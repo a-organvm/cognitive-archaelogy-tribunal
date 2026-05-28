@@ -19,6 +19,17 @@ class ArchiveScanner:
     Supports local file systems, network drives, and common cloud storage mounts.
     """
     
+    # Security: Prevent scanning of critical system directories
+    UNSAFE_PATHS_POSIX = {
+        '/', '/bin', '/boot', '/dev', '/etc', '/lib', '/lib64',
+        '/proc', '/root', '/run', '/sbin', '/sys', '/usr', '/var'
+    }
+
+    UNSAFE_PATHS_NT = {
+        'C:\\Windows', 'C:\\Program Files', 'C:\\Program Files (x86)',
+        'C:\\Windows\\System32'
+    }
+
     def __init__(self, exclude_patterns: Optional[List[str]] = None):
         """
         Initialize the archive scanner.
@@ -59,6 +70,41 @@ class ArchiveScanner:
         
         return False
     
+    def is_unsafe_path(self, path: Path) -> bool:
+        """
+        Check if the path is unsafe to scan (e.g., system root, /etc).
+        Prevent scanning of critical system directories to avoid security risks.
+        """
+        # Resolve path to get absolute path
+        try:
+            abs_path = path.resolve()
+        except OSError:
+            # If we can't resolve it, it might be unsafe or invalid
+            return True
+
+        # Check against root anchor (prevents scanning '/')
+        if str(abs_path) == abs_path.anchor:
+            return True
+
+        # Check against platform-specific unsafe paths
+        path_str = str(abs_path)
+
+        # POSIX checks
+        if os.name == 'posix':
+            for unsafe in self.UNSAFE_PATHS_POSIX:
+                if path_str == unsafe or path_str.startswith(f"{unsafe}/"):
+                    return True
+
+        # Windows checks (simple heuristic, could be expanded)
+        if os.name == 'nt':
+            path_lower = path_str.lower()
+            for unsafe in self.UNSAFE_PATHS_NT:
+                unsafe_lower = unsafe.lower()
+                if path_lower == unsafe_lower or path_lower.startswith(f"{unsafe_lower}{os.sep}"):
+                    return True
+
+        return False
+
     def scan_directory(self, root_path: str, recursive: bool = True, max_depth: Optional[int] = None) -> Dict:
         """
         Scan a directory and classify all files.
@@ -71,7 +117,13 @@ class ArchiveScanner:
         Returns:
             Scan results dictionary
         """
-        root = Path(root_path).resolve()
+        try:
+            root = Path(root_path).resolve()
+        except Exception as e:
+            return {'error': f"Invalid path: {e}"}
+
+        if self.is_unsafe_path(root):
+            return {'error': f"Unsafe path: {root_path} - Scanning system directories is restricted."}
         
         if not root.exists():
             return {'error': f"Path does not exist: {root_path}"}
