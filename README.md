@@ -402,7 +402,7 @@ The tribunal follows a four-sprint development plan toward v1.0.0:
 
 **Future backlog** includes: plugin architecture, REST API (FastAPI), collaborative features, export bridges (Obsidian, Notion, Zotero, Anki), interactive web UI, and semantic search with RAG.
 
-The full roadmap is maintained in [ROADMAP.md](./ROADMAP.md).
+The full roadmap is maintained in [ROADMAP.md](./docs/ROADMAP.md).
 
 ---
 
