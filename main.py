@@ -66,7 +66,40 @@ Examples:
     
     # Validate arguments
     if not (args.all or args.scan_archives or args.ai_conversations or args.personal_repos or args.org_repos or args.web_bookmarks):
-        parser.error('At least one module must be specified')
+        try:
+            from rich.console import Console
+            from rich.panel import Panel
+            from rich.theme import Theme
+            from rich.padding import Padding
+
+            theme = Theme({
+                "info": "dim cyan",
+                "warning": "magenta",
+                "error": "bold red",
+                "success": "bold green",
+                "header": "bold blue",
+            })
+            console = Console(theme=theme)
+
+            welcome_text = """
+[bold]Cognitive Archaeology Tribunal[/bold] is a comprehensive digital archaeology tool.
+
+[header]Available Modules:[/header]
+• [info]--scan-archives[/info]: Scan directories for files
+• [info]--ai-conversations[/info]: Process ChatGPT exports
+• [info]--personal-repos[/info]: Analyze GitHub user repositories
+• [info]--org-repos[/info]: Analyze GitHub organization repositories
+• [info]--web-bookmarks[/info]: Analyze browser bookmarks
+
+[header]Example Usage:[/header]
+[success]python main.py --scan-archives ./backups --output-dir ./results[/success]
+
+Run [bold]python main.py --help[/bold] for detailed documentation.
+"""
+            console.print(Panel(welcome_text.strip(), title="👋 Welcome", border_style="header"))
+            sys.exit(0)
+        except ImportError:
+            parser.error('At least one module must be specified')
     
     print("=" * 70)
     print("COGNITIVE ARCHAEOLOGY TRIBUNAL")
