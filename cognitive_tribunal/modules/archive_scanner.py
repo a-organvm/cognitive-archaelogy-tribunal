@@ -44,6 +44,39 @@ class ArchiveScanner:
             'by_category': {},
             'errors': [],
         }
+
+    UNSAFE_PATHS = {
+        '/etc', '/var', '/usr', '/bin', '/sbin', '/sys', '/proc', '/dev', '/root',
+        'C:\\Windows', 'C:\\Program Files', 'C:\\Program Files (x86)'
+    }
+
+    def is_unsafe_path(self, path: Path) -> bool:
+        """Check if path is or is inside a known sensitive directory."""
+        resolved_path = path.resolve()
+        path_str = str(resolved_path)
+
+        # Check exact match
+        if path_str in self.UNSAFE_PATHS:
+            return True
+
+        # Special case for roots: only block exact match
+        if path_str == '/' or path_str == 'C:\\':
+            return True
+
+        # Check if it is a subdirectory of an unsafe path
+        # We need to be careful with string matching (e.g. /etc_custom should not match /etc)
+        # So we check if any unsafe path is a parent of the resolved path
+        for unsafe in self.UNSAFE_PATHS:
+            try:
+                # If unsafe path is a parent of resolved_path, this will succeed
+                # We use Path object comparison for correctness
+                if resolved_path.is_relative_to(Path(unsafe)):
+                    return True
+            except ValueError:
+                # Not relative to this unsafe path
+                continue
+
+        return False
     
     def should_exclude(self, path: Path) -> bool:
         """Check if a path should be excluded."""
@@ -79,6 +112,9 @@ class ArchiveScanner:
         if not root.is_dir():
             return {'error': f"Path is not a directory: {root_path}"}
         
+        if self.is_unsafe_path(root):
+            return {'error': f"Unsafe path detected: {root}"}
+
         print(f"Scanning directory: {root}")
         self.scanned_files = []
         self.deduplicator = Deduplicator()
