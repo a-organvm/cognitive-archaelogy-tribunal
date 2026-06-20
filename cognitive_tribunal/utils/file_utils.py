@@ -67,7 +67,7 @@ class FileHasher:
         try:
             with open(file_path, 'rb') as f:
                 # Read in chunks to handle large files
-                for chunk in iter(lambda: f.read(8192), b''):
+                for chunk in iter(lambda: f.read(65536), b''):
                     hash_func.update(chunk)
             return hash_func.hexdigest()
         except (IOError, OSError) as e:
@@ -93,6 +93,13 @@ class Deduplicator:
     def __init__(self):
         self.hash_to_files: Dict[str, List[Path]] = {}
         self.size_to_files: Dict[int, List[Path]] = {}
+        self._file_hash_cache: Dict[Path, str] = {}
+
+    def _get_file_hash(self, file_path: Path) -> str:
+        """Get file hash, using cache if available."""
+        if file_path not in self._file_hash_cache:
+            self._file_hash_cache[file_path] = FileHasher.compute_hash(file_path)
+        return self._file_hash_cache[file_path]
     
     def add_file(self, file_path: Path, compute_full_hash: bool = False):
         """
@@ -111,7 +118,7 @@ class Deduplicator:
             
             # Compute full hash if requested or if size collision detected
             if compute_full_hash or len(self.size_to_files[file_size]) > 1:
-                full_hash = FileHasher.compute_hash(file_path)
+                full_hash = self._get_file_hash(file_path)
                 if full_hash not in self.hash_to_files:
                     self.hash_to_files[full_hash] = []
                 self.hash_to_files[full_hash].append(file_path)
@@ -133,7 +140,7 @@ class Deduplicator:
                 # Compute hashes for files with same size
                 file_groups: Dict[str, List[Path]] = {}
                 for file_path in files:
-                    full_hash = FileHasher.compute_hash(file_path)
+                    full_hash = self._get_file_hash(file_path)
                     if full_hash not in file_groups:
                         file_groups[full_hash] = []
                     file_groups[full_hash].append(file_path)
