@@ -19,6 +19,28 @@ class ArchiveScanner:
     Supports local file systems, network drives, and common cloud storage mounts.
     """
     
+    UNSAFE_PATHS_POSIX = {
+        '/',
+        '/bin',
+        '/boot',
+        '/dev',
+        '/etc',
+        '/lib',
+        '/lib64',
+        '/proc',
+        '/root',
+        '/sbin',
+        '/sys',
+        '/usr',
+        '/var',
+    }
+
+    UNSAFE_PATHS_NT = {
+        'C:\\Windows',
+        'C:\\Program Files',
+        'C:\\Program Files (x86)',
+    }
+
     def __init__(self, exclude_patterns: Optional[List[str]] = None):
         """
         Initialize the archive scanner.
@@ -45,6 +67,29 @@ class ArchiveScanner:
             'errors': [],
         }
     
+    def is_unsafe_path(self, path: Path) -> bool:
+        """Check if path is considered unsafe to scan."""
+        path_str = str(path)
+
+        # Check Posix unsafe paths
+        if path_str == '/':
+            return True
+
+        for unsafe in self.UNSAFE_PATHS_POSIX:
+            if unsafe == '/':
+                continue
+            if path_str == unsafe or path_str.startswith(unsafe + os.sep):
+                return True
+
+        # Check Windows unsafe paths
+        path_str_lower = path_str.lower().replace('/', '\\')
+        for unsafe in self.UNSAFE_PATHS_NT:
+            unsafe_lower = unsafe.lower()
+            if path_str_lower == unsafe_lower or path_str_lower.startswith(unsafe_lower + '\\'):
+                return True
+
+        return False
+
     def should_exclude(self, path: Path) -> bool:
         """Check if a path should be excluded."""
         path_str = str(path)
@@ -73,6 +118,9 @@ class ArchiveScanner:
         """
         root = Path(root_path).resolve()
         
+        if self.is_unsafe_path(root):
+            return {'error': f"Security risk: Path is unsafe to scan: {root_path}"}
+
         if not root.exists():
             return {'error': f"Path does not exist: {root_path}"}
         
