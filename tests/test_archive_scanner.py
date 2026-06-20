@@ -124,3 +124,62 @@ def test_duplicate_detection_within_single_location():
         assert dedup_stats['total_files'] == 3
         assert dedup_stats['duplicate_groups'] == 1
         assert dedup_stats['duplicate_files'] == 1  # 2 files - 1 = 1 duplicate
+
+
+def test_unsafe_path_blocking():
+    """
+    Test that scanning sensitive system paths is blocked.
+    """
+    scanner = ArchiveScanner()
+    # Mocking unsafe_paths for the test environment to ensure we can trigger it
+    # regardless of the actual OS we are running on.
+    scanner.unsafe_paths = {'/unsafe_test_dir'}
+
+    # We need a path that resolves to /unsafe_test_dir or starts with it.
+    with tempfile.TemporaryDirectory() as temp_dir:
+        unsafe_dir = Path(temp_dir).resolve()
+        # Mocking the set of unsafe paths to include our temp dir
+        scanner.unsafe_paths = {str(unsafe_dir)}
+
+        result = scanner.scan_directory(str(unsafe_dir))
+
+        assert 'error' in result, "Expected error when scanning unsafe path"
+        assert 'Security: Scanning of system directory' in result['error']
+
+        # Also verify that a subpath is blocked
+        sub_dir = unsafe_dir / "subdir"
+        # We don't create it, but the check happens before existence check if we implemented it right
+        # But our implementation checks resolve() which requires existence for symlinks usually,
+        # but resolve() works on non-existent paths in modern python if only the last part is missing?
+        # Actually, let's just make the directory to be sure
+        sub_dir.mkdir()
+        result_sub = scanner.scan_directory(str(sub_dir))
+        assert 'error' in result_sub, "Expected error when scanning subpath of unsafe path"
+        assert 'Security: Scanning of system directory' in result_sub['error']
+
+    # Test false positive avoidance (prefix match but not directory match)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create a directory that starts with the unsafe name but is different
+        # e.g. /tmp/unsafe_test_dir_suffix
+        safe_dir = Path(temp_dir) / "unsafe_test_dir_suffix"
+        safe_dir.mkdir()
+
+        # Reset unsafe paths to just the base name (virtual)
+        # We need to simulate: unsafe=/foo, scanning=/foo_bar
+
+        # Let's use a concrete example. Unsafe: /tmp/mock_unsafe
+        # Safe: /tmp/mock_unsafe_suffix
+
+        base_dir = Path(temp_dir).resolve()
+        unsafe_path = base_dir / "mock_unsafe"
+        safe_path = base_dir / "mock_unsafe_suffix"
+        safe_path.mkdir()
+
+        scanner.unsafe_paths = {str(unsafe_path)}
+
+        # Should NOT return security error (might return empty stats as dir is empty)
+        result = scanner.scan_directory(str(safe_path))
+
+        if 'error' in result:
+             assert 'Security' not in result['error'], \
+                 f"False positive detection: {safe_path} matches unsafe {unsafe_path}"

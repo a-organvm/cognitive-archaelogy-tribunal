@@ -36,6 +36,11 @@ class ArchiveScanner:
             '*.tmp',
             '*.swp',
         ]
+        # Security: Prevent scanning of sensitive system directories
+        self.unsafe_paths = {
+            '/etc', '/var', '/proc', '/sys', '/dev', '/boot', '/root',
+            'C:\\Windows', 'C:\\Program Files', 'C:\\Program Files (x86)'
+        }
         self.deduplicator = Deduplicator()
         self.scanned_files: List[Dict] = []
         self.stats = {
@@ -59,6 +64,17 @@ class ArchiveScanner:
         
         return False
     
+    def is_unsafe_path(self, path: Path) -> bool:
+        """Check if path is a sensitive system directory."""
+        resolved_path = path.resolve()
+
+        for unsafe in self.unsafe_paths:
+            unsafe_path = Path(unsafe)
+            # Check if it IS the unsafe path or if it is INSIDE the unsafe path
+            if resolved_path == unsafe_path or unsafe_path in resolved_path.parents:
+                return True
+        return False
+
     def scan_directory(self, root_path: str, recursive: bool = True, max_depth: Optional[int] = None) -> Dict:
         """
         Scan a directory and classify all files.
@@ -73,6 +89,9 @@ class ArchiveScanner:
         """
         root = Path(root_path).resolve()
         
+        if self.is_unsafe_path(root):
+            return {'error': f"Security: Scanning of system directory '{root}' is restricted."}
+
         if not root.exists():
             return {'error': f"Path does not exist: {root_path}"}
         
