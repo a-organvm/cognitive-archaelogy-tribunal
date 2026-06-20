@@ -12,6 +12,22 @@ from ..utils.file_utils import (
     FileClassifier, FileHasher, Deduplicator, extract_file_metadata
 )
 
+UNSAFE_PATHS = [
+    '/',
+    '/bin',
+    '/boot',
+    '/dev',
+    '/etc',
+    '/lib',
+    '/proc',
+    '/root',
+    '/run',
+    '/sbin',
+    '/sys',
+    '/usr',
+    '/var',
+]
+
 
 class ArchiveScanner:
     """
@@ -58,6 +74,15 @@ class ArchiveScanner:
                 return True
         
         return False
+
+    def is_unsafe_path(self, path: Path) -> bool:
+        """Check if path is a sensitive system directory."""
+        resolved_path = str(path.resolve())
+        for unsafe in UNSAFE_PATHS:
+            # Check for exact match or subdirectory
+            if resolved_path == unsafe or resolved_path.startswith(f"{unsafe}/"):
+                return True
+        return False
     
     def scan_directory(self, root_path: str, recursive: bool = True, max_depth: Optional[int] = None) -> Dict:
         """
@@ -73,6 +98,9 @@ class ArchiveScanner:
         """
         root = Path(root_path).resolve()
         
+        if self.is_unsafe_path(root):
+            return {'error': f"Security risk: scanning {root_path} is not allowed"}
+
         if not root.exists():
             return {'error': f"Path does not exist: {root_path}"}
         
