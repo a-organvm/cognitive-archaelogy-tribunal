@@ -1,0 +1,4 @@
+## 2026-01-05 - Path Traversal Prevention in Archive Scanner
+**Vulnerability:** The `ArchiveScanner` allowed scanning of arbitrary file paths, including the root directory `/` and system directories like `/etc` or `/var`. While `resolve()` prevented directory traversal via `..`, it did not restrict the target root itself, potentially allowing users to accidentally scan sensitive system files if permissions allowed.
+**Learning:** `pathlib.Path.resolve()` handles canonicalization but not authorization/restriction. A simple "defense in depth" check is needed for tools that scan "user provided" paths to prevent accidental system scans.
+**Prevention:** Implemented an `is_unsafe_path` check that blocks the root directory and a hardcoded list of common system directories (`/etc`, `/var`, `C:\Windows`, etc.) and their children.

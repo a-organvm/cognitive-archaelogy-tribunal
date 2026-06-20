@@ -45,6 +45,31 @@ class ArchiveScanner:
             'errors': [],
         }
     
+    def is_unsafe_path(self, path: Path) -> bool:
+        """Check if path is unsafe to scan (system directories, root)."""
+        try:
+            # Check for root directory
+            if path.parent == path:
+                return True
+
+            # Define unsafe system directories
+            unsafe_paths = [
+                '/etc', '/var', '/usr', '/bin', '/sbin', '/proc', '/sys', '/dev', '/boot',
+                'C:\\Windows', 'C:\\Program Files', 'C:\\Program Files (x86)'
+            ]
+
+            for unsafe_str in unsafe_paths:
+                unsafe = Path(unsafe_str)
+                # Check if path is the unsafe directory or inside it
+                # We check if unsafe path exists to avoid false positives on cross-platform
+                if unsafe.exists() and (path == unsafe or unsafe in path.parents):
+                    return True
+
+        except Exception:
+            pass
+
+        return False
+
     def should_exclude(self, path: Path) -> bool:
         """Check if a path should be excluded."""
         path_str = str(path)
@@ -79,6 +104,9 @@ class ArchiveScanner:
         if not root.is_dir():
             return {'error': f"Path is not a directory: {root_path}"}
         
+        if self.is_unsafe_path(root):
+            return {'error': f"Security risk: unsafe path blocked: {root_path}"}
+
         print(f"Scanning directory: {root}")
         self.scanned_files = []
         self.deduplicator = Deduplicator()
