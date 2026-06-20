@@ -59,6 +59,44 @@ class ArchiveScanner:
         
         return False
     
+    def is_unsafe_path(self, path: Path) -> bool:
+        """
+        Check if path is in a restricted system location to prevent scanning sensitive OS directories.
+        """
+        try:
+            resolved = path.resolve()
+        except (OSError, RuntimeError):
+            return True
+
+        # 1. Block scanning the filesystem root directly
+        if str(resolved) == resolved.anchor:
+            return True
+
+        # 2. Block sensitive system directories
+        # These are paths we definitely don't want to traverse
+        unsafe_roots = [
+            '/etc', '/var', '/proc', '/sys', '/dev', '/boot',
+            '/bin', '/sbin', '/usr', '/lib', '/lib64', '/root',
+            'C:\\Windows', 'C:\\Program Files', 'C:\\Program Files (x86)'
+        ]
+
+        for unsafe in unsafe_roots:
+            # Create path object
+            unsafe_path = Path(unsafe)
+
+            # If the unsafe root exists on this system (handled by OS)
+            if unsafe_path.exists():
+                try:
+                    unsafe_resolved = unsafe_path.resolve()
+                    # Check if our path is inside or is the unsafe path
+                    # relative_to throws ValueError if not relative
+                    resolved.relative_to(unsafe_resolved)
+                    return True
+                except (ValueError, OSError):
+                    continue
+
+        return False
+
     def scan_directory(self, root_path: str, recursive: bool = True, max_depth: Optional[int] = None) -> Dict:
         """
         Scan a directory and classify all files.
@@ -78,6 +116,9 @@ class ArchiveScanner:
         
         if not root.is_dir():
             return {'error': f"Path is not a directory: {root_path}"}
+
+        if self.is_unsafe_path(root):
+            return {'error': f"Security violation: Path is restricted or unsafe to scan: {root_path}"}
         
         print(f"Scanning directory: {root}")
         self.scanned_files = []

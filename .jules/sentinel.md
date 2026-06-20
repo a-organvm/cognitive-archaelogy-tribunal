@@ -1,0 +1,4 @@
+## 2024-05-23 - Path Traversal Protection
+**Vulnerability:** The `ArchiveScanner` lacked validation for input paths, allowing users to scan sensitive system directories (e.g., `/etc`, `/var`, `C:\Windows`) if the application was run with sufficient privileges. This could lead to information disclosure or resource exhaustion.
+**Learning:** Standard path validation (`exists()`, `is_dir()`) is insufficient for security. Explicit blocking of known sensitive roots ("deny list") combined with "allow list" (if feasible, though here we used deny list) is necessary for file system scanners.
+**Prevention:** Implemented `is_unsafe_path` method in `ArchiveScanner` that checks against a comprehensive list of `UNSAFE_PATHS` (both Linux and Windows). The check validates if the target path is an exact match or a subdirectory of any restricted root. Note: The implementation uses `pathlib.Path.resolve()` and `relative_to` for robust path comparison.
