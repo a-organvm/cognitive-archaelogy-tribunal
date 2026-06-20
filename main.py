@@ -56,7 +56,6 @@ Examples:
     parser.add_argument('--web-bookmarks', metavar='PATH', help='Analyze web bookmarks from an export file')
     
     # Configuration
-    parser.add_argument('--github-token', help='GitHub personal access token (or use GITHUB_TOKEN env var)')
     parser.add_argument('--output-dir', default='./output', help='Output directory (default: ./output)')
     parser.add_argument('--no-inventory', action='store_true', help='Skip inventory generation')
     parser.add_argument('--no-graph', action='store_true', help='Skip knowledge graph generation')
@@ -125,7 +124,7 @@ Examples:
         print("-" * 70)
         
         try:
-            analyzer = PersonalRepoAnalyzer(args.github_token)
+            analyzer = PersonalRepoAnalyzer()
             repo_results = analyzer.analyze_user_repos(args.personal_repos)
             results['personal_repos'] = repo_results
             
@@ -144,7 +143,7 @@ Examples:
         print("-" * 70)
         
         try:
-            analyzer = OrgRepoAnalyzer(args.github_token)
+            analyzer = OrgRepoAnalyzer()
             org_results = analyzer.analyze_org_repos(args.org_repos)
             results['org_repos'] = org_results
             
