@@ -10,6 +10,16 @@ import argparse
 from pathlib import Path
 from typing import Optional
 
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.theme import Theme
+    from rich.text import Text
+    from rich.align import Align
+    RICH_AVAILABLE = True
+except ImportError:
+    RICH_AVAILABLE = False
+
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -23,8 +33,54 @@ from cognitive_tribunal.outputs.knowledge_graph import KnowledgeGraphGenerator
 from cognitive_tribunal.outputs.triage_report import TriageReportGenerator
 
 
+def print_welcome_panel():
+    """Displays a welcome panel when no arguments are provided."""
+    custom_theme = Theme({
+        "info": "dim cyan",
+        "warning": "magenta",
+        "error": "bold red",
+        "success": "bold green",
+        "header": "bold blue",
+        "command": "white on black"
+    })
+    console = Console(theme=custom_theme)
+
+    title = Text("🏛️  Cognitive Archaeology Tribunal", style="header", justify="center")
+
+    body = Text()
+    body.append("\nWelcome to the Digital Excavation Suite.\n", style="info")
+    body.append("This tool audits and analyzes digital archives, repositories, and context.\n\n")
+
+    body.append("Quick Start Examples:\n", style="header")
+    body.append("  • Run complete audit:\n", style="info")
+    body.append("    python main.py --all --output-dir ./dig_site_01\n\n", style="command")
+
+    body.append("  • Scan local archives:\n", style="info")
+    body.append("    python main.py --scan-archives ./old_harddrive\n\n", style="command")
+
+    body.append("  • Analyze GitHub repos:\n", style="info")
+    body.append("    python main.py --personal-repos myusername\n", style="command")
+
+    footer = Text("\nRun 'python main.py --help' for detailed documentation.", style="dim italic")
+
+    panel = Panel(
+        Align.center(Text.assemble(body, footer)),
+        title=title,
+        border_style="blue",
+        padding=(1, 2)
+    )
+
+    console.print(panel)
+
+
 def main():
     """Main entry point for the CLI."""
+    # Empty State: Show welcome panel if no args provided
+    if len(sys.argv) == 1:
+        if RICH_AVAILABLE:
+            print_welcome_panel()
+            sys.exit(0)
+
     parser = argparse.ArgumentParser(
         description='Cognitive Archaeology Tribunal - Comprehensive digital archaeology tool',
         formatter_class=argparse.RawDescriptionHelpFormatter,
