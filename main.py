@@ -66,7 +66,47 @@ Examples:
     
     # Validate arguments
     if not (args.all or args.scan_archives or args.ai_conversations or args.personal_repos or args.org_repos or args.web_bookmarks):
-        parser.error('At least one module must be specified')
+        # Empty State: Try to show a rich welcome panel if no args provided
+        try:
+            from rich.console import Console
+            from rich.panel import Panel
+            from rich.markdown import Markdown
+
+            console = Console()
+
+            welcome_md = """
+# Welcome to Cognitive Archaeology Tribunal
+
+Your digital preservation and audit companion. This tool helps you:
+
+* 🔍 **Scan Archives**: Analyze file structures and duplicates
+* 🤖 **AI Context**: Aggregate conversations from AI exports
+* 💻 **GitHub Analysis**: Audit personal and organizational repositories
+* 🔖 **Bookmarks**: Analyze web bookmarks
+
+## Quick Start
+
+Run with specific modules:
+
+```bash
+python main.py --scan-archives ./my-data --output-dir ./report
+python main.py --personal-repos myusername
+```
+
+For full help, run: `python main.py --help`
+            """
+
+            console.print(Panel(
+                Markdown(welcome_md),
+                title="🎨 [bold magenta]Cognitive Archaeology Tribunal[/bold magenta]",
+                border_style="cyan",
+                expand=False
+            ))
+            sys.exit(0)
+
+        except ImportError:
+            # Fallback for when rich is not available
+            parser.error('At least one module must be specified')
     
     print("=" * 70)
     print("COGNITIVE ARCHAEOLOGY TRIBUNAL")
