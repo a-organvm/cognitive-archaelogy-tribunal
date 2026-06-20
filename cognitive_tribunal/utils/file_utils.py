@@ -62,15 +62,22 @@ class FileHasher:
         Returns:
             Hexadecimal hash string
         """
-        hash_func = hashlib.new(algorithm)
-        
         try:
             with open(file_path, 'rb') as f:
-                # Read in chunks to handle large files
+                # Use hashlib.file_digest (Python 3.11+) for optimized hashing
+                if hasattr(hashlib, 'file_digest'):
+                    digest = hashlib.file_digest(f, algorithm)
+                    return digest.hexdigest()
+
+                # Fallback for older Python versions
+                hash_func = hashlib.new(algorithm)
                 for chunk in iter(lambda: f.read(8192), b''):
                     hash_func.update(chunk)
-            return hash_func.hexdigest()
+                return hash_func.hexdigest()
         except (IOError, OSError) as e:
+            return f"ERROR: {str(e)}"
+        except ValueError as e:
+            # Handle invalid hash algorithm
             return f"ERROR: {str(e)}"
     
     @staticmethod
