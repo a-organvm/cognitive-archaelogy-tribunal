@@ -23,6 +23,39 @@ from cognitive_tribunal.outputs.knowledge_graph import KnowledgeGraphGenerator
 from cognitive_tribunal.outputs.triage_report import TriageReportGenerator
 
 
+def show_welcome():
+    """Displays the rich welcome screen."""
+    try:
+        from rich.console import Console
+        from rich.panel import Panel
+        from rich.text import Text
+
+        console = Console()
+        welcome_text = """
+[bold]Welcome![/bold] Please specify a module to run.
+
+[bold yellow]Available Modules:[/bold yellow]
+• [green]Archive Scanner:[/green]   --scan-archives <path>
+• [green]AI Conversations:[/green]  --ai-conversations <path>
+• [green]Personal Repos:[/green]    --personal-repos <username>
+• [green]Org Repos:[/green]         --org-repos <orgname>
+• [green]Web Bookmarks:[/green]     --web-bookmarks <path>
+
+[dim]Run with --help for full usage information.[/dim]
+"""
+        panel = Panel(
+            welcome_text,
+            title=Text("Cognitive Archaeology Tribunal", style="bold cyan"),
+            subtitle=Text("Comprehensive Digital Archaeology Tool", style="italic white"),
+            border_style="blue",
+            padding=(1, 2)
+        )
+        console.print(panel)
+        return True
+    except ImportError:
+        return False
+
+
 def main():
     """Main entry point for the CLI."""
     parser = argparse.ArgumentParser(
@@ -66,7 +99,11 @@ Examples:
     
     # Validate arguments
     if not (args.all or args.scan_archives or args.ai_conversations or args.personal_repos or args.org_repos or args.web_bookmarks):
-        parser.error('At least one module must be specified')
+        # UX Improvement: Show rich welcome screen instead of plain error
+        if show_welcome():
+            sys.exit(1)
+        else:
+            parser.error('At least one module must be specified')
     
     print("=" * 70)
     print("COGNITIVE ARCHAEOLOGY TRIBUNAL")
