@@ -10,6 +10,12 @@ from pathlib import Path
 from typing import Dict, List, Set, Optional
 from datetime import datetime
 
+try:
+    import xxhash
+    HAS_XXHASH = True
+except ImportError:
+    HAS_XXHASH = False
+
 
 class FileClassifier:
     """Classifies files by type and purpose."""
@@ -57,12 +63,21 @@ class FileHasher:
         
         Args:
             file_path: Path to the file
-            algorithm: Hash algorithm to use (sha256, md5, etc.)
+            algorithm: Hash algorithm to use (sha256, md5, xxhash, etc.)
             
         Returns:
             Hexadecimal hash string
         """
-        hash_func = hashlib.new(algorithm)
+        if algorithm == 'xxhash' and HAS_XXHASH:
+            hash_func = xxhash.xxh64()
+        else:
+            try:
+                hash_func = hashlib.new(algorithm)
+            except ValueError:
+                # Fallback or invalid algorithm
+                if algorithm == 'xxhash':
+                    raise ValueError("xxhash module not installed")
+                raise ValueError(f"Unknown algorithm {algorithm}")
         
         try:
             with open(file_path, 'rb') as f:
@@ -90,9 +105,14 @@ class FileHasher:
 class Deduplicator:
     """Identifies duplicate files."""
     
-    def __init__(self):
+    def __init__(self, algorithm: Optional[str] = None):
         self.hash_to_files: Dict[str, List[Path]] = {}
         self.size_to_files: Dict[int, List[Path]] = {}
+
+        if algorithm:
+            self.algorithm = algorithm
+        else:
+            self.algorithm = 'xxhash' if HAS_XXHASH else 'sha256'
     
     def add_file(self, file_path: Path, compute_full_hash: bool = False):
         """
@@ -111,7 +131,7 @@ class Deduplicator:
             
             # Compute full hash if requested or if size collision detected
             if compute_full_hash or len(self.size_to_files[file_size]) > 1:
-                full_hash = FileHasher.compute_hash(file_path)
+                full_hash = FileHasher.compute_hash(file_path, algorithm=self.algorithm)
                 if full_hash not in self.hash_to_files:
                     self.hash_to_files[full_hash] = []
                 self.hash_to_files[full_hash].append(file_path)
@@ -133,7 +153,7 @@ class Deduplicator:
                 # Compute hashes for files with same size
                 file_groups: Dict[str, List[Path]] = {}
                 for file_path in files:
-                    full_hash = FileHasher.compute_hash(file_path)
+                    full_hash = FileHasher.compute_hash(file_path, algorithm=self.algorithm)
                     if full_hash not in file_groups:
                         file_groups[full_hash] = []
                     file_groups[full_hash].append(file_path)
