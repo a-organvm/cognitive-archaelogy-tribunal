@@ -67,7 +67,8 @@ class FileHasher:
         try:
             with open(file_path, 'rb') as f:
                 # Read in chunks to handle large files
-                for chunk in iter(lambda: f.read(8192), b''):
+                # Use 64KB buffer for better performance
+                for chunk in iter(lambda: f.read(65536), b''):
                     hash_func.update(chunk)
             return hash_func.hexdigest()
         except (IOError, OSError) as e:
@@ -93,6 +94,7 @@ class Deduplicator:
     def __init__(self):
         self.hash_to_files: Dict[str, List[Path]] = {}
         self.size_to_files: Dict[int, List[Path]] = {}
+        self.file_to_hash: Dict[str, str] = {}
     
     def add_file(self, file_path: Path, compute_full_hash: bool = False):
         """
@@ -115,6 +117,7 @@ class Deduplicator:
                 if full_hash not in self.hash_to_files:
                     self.hash_to_files[full_hash] = []
                 self.hash_to_files[full_hash].append(file_path)
+                self.file_to_hash[str(file_path)] = full_hash
         except (IOError, OSError):
             pass  # Skip files we can't read
     
@@ -133,7 +136,14 @@ class Deduplicator:
                 # Compute hashes for files with same size
                 file_groups: Dict[str, List[Path]] = {}
                 for file_path in files:
-                    full_hash = FileHasher.compute_hash(file_path)
+                    # Use cached hash if available to avoid re-reading file
+                    file_key = str(file_path)
+                    if file_key in self.file_to_hash:
+                        full_hash = self.file_to_hash[file_key]
+                    else:
+                        full_hash = FileHasher.compute_hash(file_path)
+                        self.file_to_hash[file_key] = full_hash
+
                     if full_hash not in file_groups:
                         file_groups[full_hash] = []
                     file_groups[full_hash].append(file_path)
