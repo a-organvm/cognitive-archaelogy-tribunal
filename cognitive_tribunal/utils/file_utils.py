@@ -10,6 +10,12 @@ from pathlib import Path
 from typing import Dict, List, Set, Optional
 from datetime import datetime
 
+try:
+    import xxhash
+    HAS_XXHASH = True
+except ImportError:
+    HAS_XXHASH = False
+
 
 class FileClassifier:
     """Classifies files by type and purpose."""
@@ -57,17 +63,24 @@ class FileHasher:
         
         Args:
             file_path: Path to the file
-            algorithm: Hash algorithm to use (sha256, md5, etc.)
+            algorithm: Hash algorithm to use (sha256, md5, xxhash)
             
         Returns:
             Hexadecimal hash string
         """
-        hash_func = hashlib.new(algorithm)
+        if algorithm == 'xxhash':
+            if HAS_XXHASH:
+                hash_func = xxhash.xxh64()
+            else:
+                # Fallback to sha256 if xxhash requested but not available
+                hash_func = hashlib.new('sha256')
+        else:
+            hash_func = hashlib.new(algorithm)
         
         try:
             with open(file_path, 'rb') as f:
-                # Read in chunks to handle large files
-                for chunk in iter(lambda: f.read(8192), b''):
+                # Read in chunks to handle large files (64KB buffer)
+                for chunk in iter(lambda: f.read(65536), b''):
                     hash_func.update(chunk)
             return hash_func.hexdigest()
         except (IOError, OSError) as e:
@@ -93,6 +106,8 @@ class Deduplicator:
     def __init__(self):
         self.hash_to_files: Dict[str, List[Path]] = {}
         self.size_to_files: Dict[int, List[Path]] = {}
+        self.file_to_hash: Dict[Path, str] = {}
+        self.hash_algo = 'xxhash' if HAS_XXHASH else 'sha256'
     
     def add_file(self, file_path: Path, compute_full_hash: bool = False):
         """
@@ -111,10 +126,17 @@ class Deduplicator:
             
             # Compute full hash if requested or if size collision detected
             if compute_full_hash or len(self.size_to_files[file_size]) > 1:
-                full_hash = FileHasher.compute_hash(file_path)
+                if file_path in self.file_to_hash:
+                    full_hash = self.file_to_hash[file_path]
+                else:
+                    full_hash = FileHasher.compute_hash(file_path, self.hash_algo)
+                    self.file_to_hash[file_path] = full_hash
+
                 if full_hash not in self.hash_to_files:
                     self.hash_to_files[full_hash] = []
-                self.hash_to_files[full_hash].append(file_path)
+                # Avoid duplicates in list
+                if file_path not in self.hash_to_files[full_hash]:
+                    self.hash_to_files[full_hash].append(file_path)
         except (IOError, OSError):
             pass  # Skip files we can't read
     
@@ -133,7 +155,12 @@ class Deduplicator:
                 # Compute hashes for files with same size
                 file_groups: Dict[str, List[Path]] = {}
                 for file_path in files:
-                    full_hash = FileHasher.compute_hash(file_path)
+                    if file_path in self.file_to_hash:
+                        full_hash = self.file_to_hash[file_path]
+                    else:
+                        full_hash = FileHasher.compute_hash(file_path, self.hash_algo)
+                        self.file_to_hash[file_path] = full_hash
+
                     if full_hash not in file_groups:
                         file_groups[full_hash] = []
                     file_groups[full_hash].append(file_path)
