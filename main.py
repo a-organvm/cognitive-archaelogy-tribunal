@@ -21,6 +21,7 @@ from cognitive_tribunal.modules.web_bookmark_analyzer import WebBookmarkAnalyzer
 from cognitive_tribunal.outputs.inventory import InventoryGenerator
 from cognitive_tribunal.outputs.knowledge_graph import KnowledgeGraphGenerator
 from cognitive_tribunal.outputs.triage_report import TriageReportGenerator
+from cognitive_tribunal.utils.ui import console, Panel
 
 
 def main():
@@ -66,13 +67,21 @@ Examples:
     
     # Validate arguments
     if not (args.all or args.scan_archives or args.ai_conversations or args.personal_repos or args.org_repos or args.web_bookmarks):
-        parser.error('At least one module must be specified')
+        if Panel:
+            console.print(Panel(
+                "[bold]Welcome to Cognitive Archaeology Tribunal[/bold]\n\n"
+                "Please specify at least one module to run.\n"
+                "Use [cyan]--help[/cyan] for more information.",
+                title="Cognitive Archaeology Tribunal",
+                border_style="cyan"
+            ))
+        else:
+             print("Error: At least one module must be specified. Use --help for usage.")
+        sys.exit(1)
     
-    print("=" * 70)
-    print("COGNITIVE ARCHAEOLOGY TRIBUNAL")
-    print("Comprehensive Archaeological Dig Tool")
-    print("=" * 70)
-    print()
+    console.rule("[bold cyan]COGNITIVE ARCHAEOLOGY TRIBUNAL")
+    console.print("[dim]Comprehensive Archaeological Dig Tool[/dim]")
+    console.print()
     
     # Create output directory
     output_dir = Path(args.output_dir)
