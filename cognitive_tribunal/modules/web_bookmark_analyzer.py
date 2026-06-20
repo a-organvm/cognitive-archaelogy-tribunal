@@ -4,7 +4,7 @@ This module is responsible for parsing and analyzing web bookmark export files.
 """
 
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, List
 
 
@@ -64,7 +64,10 @@ class WebBookmarkAnalyzer:
             bookmark = {
                 "url": url,
                 "title": title,
-                "add_date": datetime.fromtimestamp(add_date_unix).isoformat(),
+                "add_date": datetime.fromtimestamp(
+                    add_date_unix,
+                    tz=timezone.utc,
+                ).replace(tzinfo=None).isoformat(),
                 "tags": [] # Tags are not easily parsed in this simple format
             }
             self.results["bookmarks"].append(bookmark)
