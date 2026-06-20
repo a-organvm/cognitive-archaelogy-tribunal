@@ -1,0 +1,4 @@
+## 2024-05-22 - Path Traversal Prevention in ArchiveScanner
+**Vulnerability:** The `ArchiveScanner` accepted any directory path for scanning, including sensitive system directories (e.g., `/etc`, `C:\Windows`) and the filesystem root. This could lead to information disclosure or denial of service if the tool were run with elevated privileges or on a large system.
+**Learning:** Checking for file existence (`exists()`) and type (`is_dir()`) is insufficient for security. We must explicitly validate that the path is not a sensitive system path.
+**Prevention:** Implemented an `is_unsafe_path` method that uses `pathlib.Path.resolve()` to normalize the path and then checks against a blacklist of known system directories and the root anchor. This pattern should be reused for any module accepting file paths.

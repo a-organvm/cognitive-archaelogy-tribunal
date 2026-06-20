@@ -59,6 +59,31 @@ class ArchiveScanner:
         
         return False
     
+    def is_unsafe_path(self, path: Path) -> bool:
+        """Check if a path is unsafe to scan (system directories, root)."""
+        try:
+            path = path.resolve()
+        except OSError:
+            pass
+
+        # Check for root directory
+        if path.anchor == str(path):
+            return True
+
+        # Common unsafe directories (Unix/Linux & Windows)
+        path_str = str(path)
+        unsafe_prefixes = [
+            '/etc', '/var', '/usr', '/bin', '/sbin', '/sys',
+            '/proc', '/dev', '/boot', '/lib', '/lib64', '/opt', '/run',
+            r'C:\Windows', r'C:\Program Files', r'C:\Program Files (x86)'
+        ]
+
+        for prefix in unsafe_prefixes:
+            if path_str == prefix or path_str.startswith(prefix + os.sep):
+                return True
+
+        return False
+
     def scan_directory(self, root_path: str, recursive: bool = True, max_depth: Optional[int] = None) -> Dict:
         """
         Scan a directory and classify all files.
@@ -78,6 +103,9 @@ class ArchiveScanner:
         
         if not root.is_dir():
             return {'error': f"Path is not a directory: {root_path}"}
+
+        if self.is_unsafe_path(root):
+            return {'error': f"Unsafe path detected: {root_path}. Scanning system directories is not allowed."}
         
         print(f"Scanning directory: {root}")
         self.scanned_files = []
