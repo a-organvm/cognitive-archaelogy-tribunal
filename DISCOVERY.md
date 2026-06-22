@@ -1,0 +1,5 @@
+# Discovery Thesis: Cognitive Archaeology Tribunal
+
+The highest latent value of the Cognitive Archaeology Tribunal lies in its role as a continuous, cross-layer epistemic audit engine that provides the foundational knowledge graph for the entire organizational ecosystem. By programmatically excavating and correlating filesystem archives, AI conversation histories, web bookmarks, and GitHub repositories (both personal forks and org assets), it transforms unmanageable digital entropy into a unified, queryable system. Its immediate, reusable product is the automated generation of actionable triage reports and Cytoscape-compatible knowledge graphs, which directly feed downstream orchestration tools (like Agentic Titan) to drive governance, deduplication, and integration decisions. It is not an archive; it is the active sensory organ for organizational memory.
+
+**Single Best Concrete First Task:** Implement a continuous scheduled background job to run the repository analyzer modules against the organization's GitHub accounts, ensuring the unified knowledge graph and triage reports are automatically updated and accessible to downstream routing agents.
