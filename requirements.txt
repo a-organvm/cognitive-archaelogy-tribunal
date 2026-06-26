@@ -1,6 +1,6 @@
 # Core dependencies
 PyGithub>=2.9.1
-requests>=2.32.5
+requests>=2.34.2
 python-dateutil>=2.9.0.post0
 
 # File system and archiving
@@ -9,15 +9,15 @@ watchdog>=6.0.0
 
 # Data processing
 pandas>=2.3.3
-networkx>=3.2.1
+networkx>=3.4.2
 
 # CLI
-click>=8.1.8
+click>=8.4.2
 rich>=15.0.0
 pyyaml>=6.0.3
 
 # Hashing and deduplication
-xxhash>=3.7.0
+xxhash>=3.7.1
 
 # Optional: AI conversation export (chatgpt-exporter not on PyPI, will document manual install)
 # Note: chatgpt-exporter needs to be installed manually from GitHub
