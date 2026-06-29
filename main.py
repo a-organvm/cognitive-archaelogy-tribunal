@@ -13,6 +13,16 @@ from typing import Optional
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.text import Text
+    from rich.markdown import Markdown
+    from rich.theme import Theme
+    RICH_AVAILABLE = True
+except ImportError:
+    RICH_AVAILABLE = False
+
 from cognitive_tribunal.modules.archive_scanner import ArchiveScanner
 from cognitive_tribunal.modules.ai_context_aggregator import AIContextAggregator
 from cognitive_tribunal.modules.personal_repo_analyzer import PersonalRepoAnalyzer
@@ -23,8 +33,42 @@ from cognitive_tribunal.outputs.knowledge_graph import KnowledgeGraphGenerator
 from cognitive_tribunal.outputs.triage_report import TriageReportGenerator
 
 
+def print_welcome():
+    """Prints a welcome message using Rich if available."""
+    if not RICH_AVAILABLE:
+        print("Cognitive Archaeology Tribunal\nRun with --help for usage information.")
+        return
+
+    console = Console(theme=Theme({"info": "dim cyan", "warning": "magenta"}))
+
+    welcome_text = Text()
+    welcome_text.append("Welcome to the ", style="bold")
+    welcome_text.append("Cognitive Archaeology Tribunal", style="bold magenta")
+    welcome_text.append(" 🏛️\n\n", style="bold")
+    welcome_text.append("Your comprehensive tool for auditing digital archives, AI conversations, and code repositories.", style="italic")
+
+    # We use a grid or just append markdown
+    from rich.console import Group
+    panel_content = Group(
+        welcome_text,
+        Markdown("\nRun `python main.py --help` to see all available modules and options.")
+    )
+
+    console.print(Panel(
+        panel_content,
+        title="[bold cyan]Digital Excavation Ready[/]",
+        border_style="cyan",
+        padding=(1, 2)
+    ))
+
+
 def main():
     """Main entry point for the CLI."""
+    # Check for empty args before parsing to show welcome screen
+    if len(sys.argv) == 1:
+        print_welcome()
+        sys.exit(0)
+
     parser = argparse.ArgumentParser(
         description='Cognitive Archaeology Tribunal - Comprehensive digital archaeology tool',
         formatter_class=argparse.RawDescriptionHelpFormatter,
