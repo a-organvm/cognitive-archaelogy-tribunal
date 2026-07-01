@@ -51,3 +51,12 @@ secrets.yaml
 
 # Personal overrides (create .gitignore.local for private-only data)
 !.gitignore.local
+
+# removed inadvertently-committed local session artifacts (PII containment)
+.specstory
+.history
+.config/.specstory
+.config/.history
+.trunk/logs
+.trunk/out
+.trunk/notifications
