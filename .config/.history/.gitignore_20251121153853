@@ -27,7 +27,7 @@ MANIFEST
 venv/
 ENV/
 env/
-.venv
+.venv/
 
 # IDE
 .vscode/
@@ -36,19 +36,22 @@ env/
 *.swo
 *~
 
+# Local history (VS Code extension)
+.history/
+
+# Trunk
+.trunk/
+
 # OS
 .DS_Store
 Thumbs.db
 
-# Output files (configurable - see output/.gitignore for public exports)
-output/*.log
+# Output files
+output/
 *.json.bak
+*.log
 
-# Private credentials only
+# Credentials
 .env
 config.local.yaml
 secrets.yaml
-
-# Personal overrides (create .gitignore.local for private-only data)
-!.gitignore.local
-

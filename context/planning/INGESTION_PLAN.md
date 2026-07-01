@@ -111,7 +111,7 @@ Based on the Cognitive Operating System documentation, the system consists of:
 #### 1.1 Scan This Repository
 ```bash
 python main.py \
-  --scan-archives /home/user/cognitive-archaelogy-tribunal \
+  --scan-archives ~/cognitive-archaelogy-tribunal \
   --output-dir ./output/self-analysis
 ```
 
@@ -323,7 +323,7 @@ python main.py \
 1. **Run Self-Analysis**
    ```bash
    python main.py \
-     --scan-archives /home/user/cognitive-archaelogy-tribunal \
+     --scan-archives ~/cognitive-archaelogy-tribunal \
      --output-dir ./output/self-analysis
    ```
    - Understand tool's current state
@@ -495,10 +495,10 @@ python main.py \
 
 ### Step 1: Self-Analysis (DO NOW)
 ```bash
-cd /home/user/cognitive-archaelogy-tribunal
+cd ~/cognitive-archaelogy-tribunal
 
 python main.py \
-  --scan-archives /home/user/cognitive-archaelogy-tribunal \
+  --scan-archives ~/cognitive-archaelogy-tribunal \
   --output-dir ./output/self-analysis
 
 # Review outputs

@@ -27,10 +27,19 @@ MANIFEST
 venv/
 ENV/
 env/
+
+# Configuration folder (contains .venv, .vscode, .trunk, .history, .github, .specstory)
+.config/
+
+# Symlinks to config folders (for tool compatibility)
 .venv
+.vscode
+.trunk
+.history
+.github
+.specstory
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -40,15 +49,12 @@ env/
 .DS_Store
 Thumbs.db
 
-# Output files (configurable - see output/.gitignore for public exports)
-output/*.log
+# Output files
+output/
 *.json.bak
+*.log
 
-# Private credentials only
+# Credentials
 .env
 config.local.yaml
 secrets.yaml
-
-# Personal overrides (create .gitignore.local for private-only data)
-!.gitignore.local
-

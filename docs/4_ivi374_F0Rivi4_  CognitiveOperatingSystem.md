@@ -3042,9 +3042,9 @@ GITHUB_ORG=ivi374forivi
 
 # Archive paths (adjust to your system)
 
-ICLOUD_PATH=/Users/your-username/Library/Mobile Documents/com~apple~CloudDocs
+ICLOUD_PATH=~/Library/Mobile Documents/com~apple~CloudDocs
 
-DROPBOX_PATH=/Users/your-username/Dropbox
+DROPBOX_PATH=~/Dropbox
 
 EXTERNAL_DRIVES=/Volumes/ExternalDrive1,/Volumes/ExternalDrive2
 

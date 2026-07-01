@@ -103,7 +103,7 @@ Scans file systems and identifies:
 
 **Example:**
 ```bash
-python main.py --scan-archives "/Users/me/Documents,/Users/me/Dropbox" --output-dir ./output
+python main.py --scan-archives "~/Documents,~/Dropbox" --output-dir ./output
 ```
 
 ### Module 2: AI Context Aggregator
@@ -255,14 +255,14 @@ Each module generates detailed JSON:
 ### Example 1: Local Archive Audit
 ```bash
 python main.py \
-  --scan-archives "/Users/me/Documents,/Users/me/Downloads" \
+  --scan-archives "~/Documents,~/Downloads" \
   --output-dir ./archive-audit
 ```
 
 ### Example 2: AI Conversation Analysis
 ```bash
 python main.py \
-  --ai-conversations "/Users/me/Downloads/chatgpt-export" \
+  --ai-conversations "~/Downloads/chatgpt-export" \
   --output-dir ./ai-analysis
 ```
 
@@ -286,8 +286,8 @@ python main.py \
 ```bash
 export GITHUB_TOKEN="ghp_yourtoken"
 python main.py \
-  --scan-archives "/Users/me/Documents" \
-  --ai-conversations "/Users/me/Downloads/chatgpt-export" \
+  --scan-archives "~/Documents" \
+  --ai-conversations "~/Downloads/chatgpt-export" \
   --personal-repos your-username \
   --org-repos your-org \
   --output-dir ./complete-audit

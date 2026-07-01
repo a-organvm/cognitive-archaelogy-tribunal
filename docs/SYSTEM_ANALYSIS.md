@@ -220,8 +220,8 @@ The Cognitive Archaeology Tribunal successfully implements:
 **Example Misses**:
 ```
 "My API key is stored in the variable x" ← Not caught
-"Contact me at john.doe.2025@gmail.com" ← Might miss with variations
-"ssh://git@github.internal.corp:repo.git" ← Internal URL patterns vary
+"Contact me at [email redacted]" ← Might miss with variations
+"ssh://[email redacted]:repo.git" ← Internal URL patterns vary
 ```
 
 **Solution**:

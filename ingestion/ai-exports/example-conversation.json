@@ -46,7 +46,7 @@
         "create_time": 1700000360,
         "content": {
           "parts": [
-            "Here's the workflow:\n\n1. Archives:\n   - Create ingestion/archives/locations.txt\n   - List paths: /Users/you/Dropbox, /Users/you/iCloud Drive\n   - Run: ./scripts/ingest_archives.sh\n\n2. Bookmarks:\n   - Export from browser (Chrome: ⋮ → Export bookmarks)\n   - Move HTML to ingestion/bookmarks/\n   - Run: ./scripts/ingest_bookmarks.sh\n\n3. Review:\n   - Check output/ for JSON results\n   - Read triage_report.txt for recommendations\n\nEverything is processed locally and can be committed for public archival."
+            "Here's the workflow:\n\n1. Archives:\n   - Create ingestion/archives/locations.txt\n   - List paths: ~/Dropbox, ~/iCloud Drive\n   - Run: ./scripts/ingest_archives.sh\n\n2. Bookmarks:\n   - Export from browser (Chrome: ⋮ → Export bookmarks)\n   - Move HTML to ingestion/bookmarks/\n   - Run: ./scripts/ingest_bookmarks.sh\n\n3. Review:\n   - Check output/ for JSON results\n   - Read triage_report.txt for recommendations\n\nEverything is processed locally and can be committed for public archival."
           ]
         }
       }

@@ -2743,8 +2743,8 @@ GITHUB_USER=4444JPP
 GITHUB_ORG=ivi374forivi
 
 # Archive paths (adjust to your system)
-ICLOUD_PATH=/Users/your-username/Library/Mobile Documents/com~apple~CloudDocs
-DROPBOX_PATH=/Users/your-username/Dropbox
+ICLOUD_PATH=~/Library/Mobile Documents/com~apple~CloudDocs
+DROPBOX_PATH=~/Dropbox
 EXTERNAL_DRIVES=/Volumes/ExternalDrive1,/Volumes/ExternalDrive2
 
 # AI context export paths (where you save conversation exports)

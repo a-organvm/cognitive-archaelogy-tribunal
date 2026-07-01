@@ -7391,12 +7391,12 @@ GITHUB_ORG=ivi374forivi
   
 
 
-ICLOUD_PATH=/Users/your-username/Library/Mobile Documents/com~apple~CloudDocs
+ICLOUD_PATH=~/Library/Mobile Documents/com~apple~CloudDocs
 
   
 
 
-DROPBOX_PATH=/Users/your-username/Dropbox
+DROPBOX_PATH=~/Dropbox
 
   
 

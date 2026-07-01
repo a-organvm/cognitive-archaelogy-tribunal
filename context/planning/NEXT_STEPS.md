@@ -9,10 +9,10 @@
 
 ### 1. Run Self-Analysis ⚡ DO NOW
 ```bash
-cd /home/user/cognitive-archaelogy-tribunal
+cd ~/cognitive-archaelogy-tribunal
 
 python main.py \
-  --scan-archives /home/user/cognitive-archaelogy-tribunal \
+  --scan-archives ~/cognitive-archaelogy-tribunal \
   --output-dir ./output/self-analysis
 ```
 
@@ -248,7 +248,7 @@ python main.py \
 
 ### "No module named 'cognitive_tribunal'"
 ```bash
-cd /home/user/cognitive-archaelogy-tribunal
+cd ~/cognitive-archaelogy-tribunal
 pip install -r requirements.txt
 ```
 
@@ -353,6 +353,6 @@ As you run each phase, you'll be able to answer:
 **Next Action:** Run Step 1 (Self-Analysis)
 **Command:**
 ```bash
-cd /home/user/cognitive-archaelogy-tribunal && \
+cd ~/cognitive-archaelogy-tribunal && \
 python main.py --scan-archives . --output-dir ./output/self-analysis
 ```

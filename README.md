@@ -311,7 +311,7 @@ Scanning multiple cloud storage mounts to find wasted space:
 
 ```bash
 python main.py \
-  --scan-archives "/Users/me/Library/Mobile Documents/com~apple~CloudDocs,/Users/me/Dropbox" \
+  --scan-archives "~/Library/Mobile Documents/com~apple~CloudDocs,~/Dropbox" \
   --output-dir ./output/cloud-dedup
 ```
 

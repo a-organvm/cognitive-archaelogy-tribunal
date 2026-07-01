@@ -152,8 +152,8 @@ cp ~/Downloads/bookmarks_11_18_2025.html ingestion/bookmarks/
 ```bash
 # 1. Create locations file
 cat > ingestion/archives/locations.txt <<EOF
-/Users/yourname/iCloud Drive
-/Users/yourname/Dropbox
+~/iCloud Drive
+~/Dropbox
 /Volumes/ExternalDrive
 EOF
 

@@ -15,9 +15,9 @@ Create a file listing archive directories to scan:
 ```bash
 # Create locations.txt with paths to scan
 cat > ingestion/archives/locations.txt <<EOF
-/Users/yourname/iCloud Drive
-/Users/yourname/Dropbox
-/Users/yourname/Documents/Archives
+~/iCloud Drive
+~/Dropbox
+~/Documents/Archives
 /Volumes/ExternalDrive
 EOF
 ```
@@ -31,12 +31,12 @@ EOF
 ### Example `locations.txt`
 ```
 # Cloud storage
-/Users/username/Library/Mobile Documents/com~apple~CloudDocs
-/Users/username/Dropbox
+~/Library/Mobile Documents/com~apple~CloudDocs
+~/Dropbox
 
 # Local archives
-/Users/username/Documents/Old Projects
-/Users/username/Pictures/Archive
+~/Documents/Old Projects
+~/Pictures/Archive
 
 # External drives
 /Volumes/Backup Drive
@@ -114,7 +114,7 @@ Results saved to `output/archives/`:
 For initial testing, start with a small directory:
 ```
 # Test with one directory first
-/Users/username/Documents/TestFolder
+~/Documents/TestFolder
 ```
 
 ### Exclude More Patterns
@@ -130,8 +130,8 @@ Edit `cognitive_tribunal/modules/archive_scanner.py` to add exclusions if needed
 ### 1. Create Configuration
 ```bash
 cat > ingestion/archives/locations.txt <<EOF
-/Users/yourname/iCloud Drive
-/Users/yourname/Dropbox
+~/iCloud Drive
+~/Dropbox
 EOF
 ```
 

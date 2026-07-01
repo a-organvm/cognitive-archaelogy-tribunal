@@ -1,0 +1,86 @@
+---
+description: AI rules derived by SpecStory from the project AI interaction history
+---
+
+## HEADERS
+
+## PROJECT DOCUMENTATION & CONTEXT SYSTEM
+
+## TECH STACK
+
+## CODING STANDARDS
+
+### MARKDOWN
+
+*   **MD040/fenced-code-language**: Fenced code blocks should have a language specified
+
+*   For directory structures, use `text`, `bash`, or `plaintext`.
+*   Common language identifiers for documentation:
+*   `bash` or `shell` - shell commands, file trees
+*   `python` - Python code
+*   `json` - JSON data
+*   `yaml` - YAML configuration
+*   `text` or `plaintext` - unformatted text
+*   `markdown` - nested markdown examples
+
+### PYTHON
+
+*   Unused imports should be removed.
+
+## WORKFLOW & RELEASE RULES
+
+## DEBUGGING
+
+## INFRASTRUCTURE
+
+## SECURITY
+
+## CODE REVIEW GUIDELINES
+
+## GIT RULES
+
+*   All config dot files/folders (`.venv`, `.trunk`, `.vscode`, `.github`, `.specstory`, `.history`) should be gitignored.
+*   **.gitignore**: Add `.history` to keep it out of version control (it's local file history).
+*   **.gitignore**: Keep `.trunk` ignored (already covered by trunk-specific patterns, but should be explicit).
+*   Configuration folders (`.vscode`, `.trunk`, `.venv`, `.github`, `.specstory`, `.history`) must stay at the workspace root where tools expect them. Attempts to consolidate them into a single directory will break their expected paths. A viable workaround is to:
+1.  Keep folders in root
+2.  Use VS Code settings to hide them from view
+3.  Let tools regenerate what they need at root (but gitignore them)
+
+## VS CODE SETTINGS
+
+*   To restore a hidden folder in VS Code:
+
+1.  Using Command Palette (⇧⌘P)
+*   Press `Cmd+Shift+P`
+*   Type "Files: Exclude"
+*   Select "Preferences: Open User Settings"
+*   Search for `files.exclude`
+*   Remove or uncheck the pattern for the folder you want to restore
+2.  Using Settings UI
+*   `Cmd+,` to open Settings
+*   Search for "files exclude"
+*   Look for the hidden folder pattern (e.g., `**/.venv` or `**/node_modules`)
+*   Click the X to remove it
+3.  Using Workspace Settings
+*   If the folder is hidden at workspace level:
+*   Open `settings.json` in your project
+*   Look for `files.exclude` configuration
+*   Remove the folder pattern
+4.  Show All Files Temporarily
+*   In the Explorer sidebar, click the "..." menu
+*   Look for filter options or "Show Excluded Files"
+*   Folders typically hidden by default:
+
+*   `.venv` or `venv/` (Python virtual environments)
+*   `node_modules/` (Node.js dependencies)
+*   `.git/` (Git repository)
+*   `__pycache__/`
+*   `.pytest_cache/`
+*   `.trunk/` (Trunk configuration)
+*   `.history/` (Local History extension)
+*   To hide folders from view in VS Code:
+
+1.  Keep folders in root
+2.  Use VS Code settings to hide them from view
+3.  Let tools regenerate what they need at root (but gitignore them)

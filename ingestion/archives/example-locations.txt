@@ -8,14 +8,14 @@
 # Empty lines: Ignored
 
 # Cloud Storage Examples
-# /Users/username/Library/Mobile Documents/com~apple~CloudDocs
-# /Users/username/Dropbox
-# /Users/username/Google Drive
+# ~/Library/Mobile Documents/com~apple~CloudDocs
+# ~/Dropbox
+# ~/Google Drive
 
 # Local Archives Examples
-# /Users/username/Documents/Archives
-# /Users/username/Documents/OldProjects
-# /Users/username/Pictures/Archive
+# ~/Documents/Archives
+# ~/Documents/OldProjects
+# ~/Pictures/Archive
 
 # External Drives Examples
 # /Volumes/Backup
@@ -27,7 +27,7 @@
 # /mnt/network-storage
 
 # For Public Demo: Scan a small test directory
-# /Users/username/Documents/PublicArchive
+# ~/Documents/PublicArchive
 
 # Instructions:
 # 1. Uncomment relevant paths (remove leading #)
